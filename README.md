@@ -14,7 +14,7 @@ This project is designed to demonstrate the end-to-end process of building a dat
 - test_main.py: Contains basic test cases to ensure the individual components of the pipeline work as expected. It checks for issues in the ETL flow and query execution.
 
 # Repository Schema
-![image](https://github.com/user-attachments/assets/58ff8c6a-3b7d-44c0-ae3c-680e1bc36a81) 
+![image](https://github.com/user-attachments/assets/9ca61869-995a-489f-9029-0a7318591dee)
 
 
 # Databricks Workflow
