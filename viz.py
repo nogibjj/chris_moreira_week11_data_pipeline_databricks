@@ -1,51 +1,53 @@
-"""
-Query and visualize data.
-"""
-
-from pyspark.sql import SparkSession
 import matplotlib.pyplot as plt
+import pandas as pd
+from pyspark.sql import SparkSession
 
 def create_spark_session():
     """
-    Create a Spark session with Delta support.
+    Create and return a Spark session.
     """
-    builder = (
-        SparkSession.builder.appName("Visualization")
-        .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1")
-        .config("spark.sql.extensions",
-                "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog",
-                "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    )
-    return builder.getOrCreate()
+    return SparkSession.builder.getOrCreate()
 
 def main():
     """
-    Query and visualize data.
+    Query and visualize data from the Delta table.
     """
     spark = create_spark_session()
     database = "csm_87_database"
     table_name = "csm_87_Spotify_Table_transformed"
 
+    # Check if table exists
     if not spark.catalog.tableExists(f"{database}.{table_name}"):
-        raise ValueError(f"Table {table_name} not found in {database}.")
+        print(f"Table {table_name} not found in {database}.")
+        print("Run the extract step to create the table.")
+        return
 
+    # Query the data
     query = f"""
-    SELECT artists_name AS artist_name,
-           SUM(CAST(streams AS BIGINT)) AS total_streams,
-           ROUND(AVG(`danceability_%`), 2) AS avg_danceability,
-           ROUND(AVG(`energy_%`), 2) AS avg_energy
+    SELECT Artist, SUM(Stream_Count) AS Total_Streams
     FROM {database}.{table_name}
-    GROUP BY artists_name
-    ORDER BY total_streams DESC
-    LIMIT 5
+    GROUP BY Artist
+    ORDER BY Total_Streams DESC
+    LIMIT 10
     """
-    data = spark.sql(query).toPandas()
+    result = spark.sql(query).toPandas()
 
-    plt.bar(data['artist_name'], data['total_streams'])
-    plt.xlabel('Artist Name')
-    plt.ylabel('Total Streams')
-    plt.title('Top Artists by Total Streams')
-    plt.xticks(rotation=45)
+    # Handle empty results
+    if result.empty:
+        print("No data available for visualization.")
+        return
+
+    # Plot the data
+    plt.figure(figsize=(10, 6))
+    plt.bar(result['Artist'], result['Total_Streams'], color='blue')
+    plt.xlabel("Artist")
+    plt.ylabel("Total Streams")
+    plt.title("Top 10 Artists by Stream Count")
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
+
+    # Save and display the plot
+    plot_path = "top_artists_streams.png"
+    plt.savefig(plot_path)
     plt.show()
+    print(f"Visualization saved to {plot_path}.")

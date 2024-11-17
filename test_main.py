@@ -1,14 +1,10 @@
-"""
-Tests for main.py
-"""
-
 from main import main as run_main
 from query_run import single_query_main as run_query
 from viz import main as run_viz
 
 def test_main():
     """
-    Test main.py execution.
+    Test the main.py execution.
     """
     try:
         run_main()
