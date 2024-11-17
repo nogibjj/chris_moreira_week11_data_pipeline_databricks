@@ -14,9 +14,12 @@ def create_spark_session(app_name="Spotify_ETL"):
     """
     builder = (
         SparkSession.builder.appName(app_name)
-        .config("spark.jars.packages", "io.delta:delta-core_2.12:2.4.0")
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+        .config("spark.jars.packages",
+                "io.delta:delta-core_2.12:2.4.0")
+        .config("spark.sql.extensions",
+                "io.delta.sql.DeltaSparkSessionExtension")
+        .config("spark.sql.catalog.spark_catalog",
+                "org.apache.spark.sql.delta.catalog.DeltaCatalog")
     )
     return builder.getOrCreate()
 
@@ -30,8 +33,8 @@ def main():
     table_name = "csm_87_Spotify_Table"
     url = (
         "https://raw.githubusercontent.com/nogibjj/"
-        "chris_moreira_week6_sql_databricks/main/data/"
-        "Spotify_Most_Streamed_Songs.csv"
+        "chris_moreira_week6_sql_databricks/main/"
+        "data/Spotify_Most_Streamed_Songs.csv"
     )
 
     print("Starting extract step...")
