@@ -1,12 +1,19 @@
-"""
-Load data into Delta table.
-"""
+from pyspark.sql import SparkSession
 
-def load_data(df, table_name, database):
+def load_data(database, table_name):
     """
-    Load transformed data to Delta.
+    Load transformed data from Delta table.
+
+    Args:
+        database (str): Databricks database.
+        table_name (str): Name of the transformed Delta table.
+
+    Returns:
+        None
     """
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{database}.{table_name}"
-    )
-    print(f"Data loaded: {database}.{table_name}")
+    spark = SparkSession.builder.getOrCreate()
+
+    # Load transformed data
+    query = f"SELECT * FROM {database}.{table_name}_transformed"
+    data = spark.sql(query)
+    print(f"Loaded data:\n{data.show()}")

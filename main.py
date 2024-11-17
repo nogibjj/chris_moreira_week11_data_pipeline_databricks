@@ -1,24 +1,20 @@
-"""
-Main ETL process.
-"""
-
 from pyspark.sql import SparkSession
 from mylib.extract import extract
 from mylib.transform import transform_data
 from mylib.load import load_data
 
-def create_spark_session(app_name="Spotify_ETL"):
+def create_spark_session():
     """
-    Create Spark session with Delta support.
+    Create and configure a Spark session.
+
+    Returns:
+        SparkSession: Configured Spark session.
     """
-    builder = (
-        SparkSession.builder.appName(app_name)
-        .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1")
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog", 
-                "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+    return (
+        SparkSession.builder.appName("Spotify_ETL")
+        .config("spark.sql.catalogImplementation", "in-memory")
+        .getOrCreate()
     )
-    return builder.getOrCreate()
 
 def main():
     """
@@ -37,12 +33,10 @@ def main():
     extract(url, table_name, database)
 
     print("Transforming data...")
-    spark.sql(f"USE {database}")
-    df = spark.table(table_name)
-    transformed_df = transform_data(df)
+    transform_data(database, table_name)
 
     print("Loading data...")
-    load_data(transformed_df, f"{table_name}_transformed", database)
+    load_data(database, table_name)
 
 if __name__ == "__main__":
     main()

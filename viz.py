@@ -1,5 +1,4 @@
 from pyspark.sql import SparkSession
-import matplotlib.pyplot as plt
 
 def main():
     """
@@ -12,14 +11,8 @@ def main():
     if not spark.catalog.tableExists(f"{database}.{table_name}"):
         raise ValueError(f"Table {table_name} not found in {database}.")
 
-    result = spark.sql(
-        f"SELECT Artist, COUNT(*) AS SongCount "
-        f"FROM {database}.{table_name} "
-        "GROUP BY Artist ORDER BY SongCount DESC LIMIT 10"
-    )
-
-    # Convert result to Pandas for visualization
-    pdf = result.toPandas()
-    pdf.plot.bar(x="Artist", y="SongCount")
-    plt.title("Top 10 Artists by Song Count")
-    plt.savefig("output_viz.png")
+    # Query the data
+    query = f"SELECT * FROM {database}.{table_name} LIMIT 10"
+    data = spark.sql(query)
+    print("Visualization:\n")
+    data.show()

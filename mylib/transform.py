@@ -1,19 +1,21 @@
-"""
-Transform data.
-"""
+from pyspark.sql import SparkSession
 
-from pyspark.sql import functions as F
+def transform_data(database, table_name):
+    """
+    Transform data in Delta table.
 
-def transform_data(df):
+    Args:
+        database (str): Databricks database.
+        table_name (str): Name of the Delta table.
+
+    Returns:
+        None
     """
-    Add popularity_category to data.
+    spark = SparkSession.builder.getOrCreate()
+
+    # Transform data by adding a "transformed" column
+    query = f"""
+        CREATE OR REPLACE TABLE {database}.{table_name}_transformed
+        AS SELECT *, 1 AS transformed FROM {database}.{table_name}
     """
-    return df.withColumn(
-        "popularity_category",
-        F.when(F.col("streams") > 1_000_000_000, "Ultra Popular")
-        .when((F.col("streams") > 500_000_000) & 
-              (F.col("streams") <= 1_000_000_000), "Very Popular")
-        .when((F.col("streams") > 100_000_000) & 
-              (F.col("streams") <= 500_000_000), "Popular")
-        .otherwise("Less Popular")
-    )
+    spark.sql(query)
