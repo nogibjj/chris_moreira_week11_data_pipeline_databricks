@@ -3,26 +3,19 @@ from mylib.extract import extract
 from mylib.transform import transform_data
 from mylib.load import load_data
 
-def create_spark_session():
-    """
-    Create and return a Spark session.
-    """
-    return SparkSession.builder.appName("ETL Pipeline").getOrCreate()
-
 def main():
     """
     Orchestrate ETL process.
     """
-    spark = create_spark_session()
+    # Create a Spark session directly
+    SparkSession.builder.appName("Spotify_ETL").getOrCreate()
 
     database = "csm_87_database"
     raw_table = "csm_87_Spotify_Table"
     transformed_table = "csm_87_Spotify_Table_transformed"
-    url = (
-        "https://raw.githubusercontent.com/nogibjj/"
-        "chris_moreira_week6_sql_databricks/main/data/"
-        "Spotify_Most_Streamed_Songs.csv"
-    )
+    url = "https://raw.githubusercontent.com/nogibjj/" \
+          "chris_moreira_week6_sql_databricks/main/data/" \
+          "Spotify_Most_Streamed_Songs.csv"
 
     print("Extracting data...")
     extract(url, raw_table, database)
