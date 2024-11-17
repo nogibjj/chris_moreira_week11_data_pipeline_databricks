@@ -2,15 +2,14 @@
 Load transformed data into a Delta table.
 """
 
-
-def load_data(df, table_name, database="my_database"):
+def load_data(df, table_name, database="csm_87_database"):
     """
-    Loads the transformed Spark DataFrame into a Delta table.
+    Loads the transformed DataFrame into a Delta table.
 
     Args:
         df (DataFrame): The transformed Spark DataFrame.
-        table_name (str): The name of the Delta table to update.
-        database (str): The Databricks Catalog database containing the table.
+        table_name (str): The name of the Delta table.
+        database (str): The Databricks Catalog database.
 
     Returns:
         None
