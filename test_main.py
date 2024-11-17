@@ -1,5 +1,5 @@
 """
-Simplified test file to verify that main.py, query_run.py, and viz.py run.
+Test suite to validate main.py, query_run.py, and viz.py.
 """
 
 from main import main as run_main
@@ -9,7 +9,7 @@ from viz import main as run_viz
 
 def test_main():
     """
-    Test to ensure main.py runs without errors.
+    Test main.py execution.
     """
     try:
         print("Testing main.py...")
@@ -21,7 +21,7 @@ def test_main():
 
 def test_query():
     """
-    Test to ensure query_run.py runs without errors.
+    Test query_run.py execution.
     """
     try:
         print("Testing query_run.py...")
@@ -33,7 +33,7 @@ def test_query():
 
 def test_viz():
     """
-    Test to ensure viz.py runs without errors.
+    Test viz.py execution.
     """
     try:
         print("Testing viz.py...")
@@ -49,6 +49,6 @@ if __name__ == "__main__":
         test_main()
         test_query()
         test_viz()
-        print("All tests ran successfully.")
+        print("All tests passed successfully.")
     except AssertionError as error:
         print(error)
