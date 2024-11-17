@@ -4,18 +4,25 @@ import pandas as pd
 def extract(url, table_name, database="csm_87_database"):
     """
     Extract data from URL, clean, and save to Delta table.
+
+    Args:
+        url (str): URL for the CSV file to download.
+        table_name (str): Name of the Delta table to create.
+        database (str): Databricks database.
+
+    Returns:
+        None
     """
-    spark = SparkSession.builder \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .getOrCreate()
+    spark = SparkSession.builder.getOrCreate()
 
     # Load CSV data into Pandas DataFrame
     df = pd.read_csv(url)
 
     # Clean column names
-    df.columns = [col.strip().replace(" ", "_").replace("(", "").replace(")", "")
-                  for col in df.columns]
+    df.columns = [
+        col.strip().replace(" ", "_").replace("(", "").replace(")", "")
+        for col in df.columns
+    ]
 
     # Convert Pandas DataFrame to Spark DataFrame
     spark_df = spark.createDataFrame(df)
@@ -23,8 +30,7 @@ def extract(url, table_name, database="csm_87_database"):
     # Create database if it doesn't exist
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
 
-    # Save the DataFrame as a Delta table in Databricks
+    # Save the DataFrame as a Delta table
     spark_df.write.format("delta").mode("overwrite").saveAsTable(
         f"{database}.{table_name}"
     )
-    print(f"Extracted data saved to table {database}.{table_name}")
