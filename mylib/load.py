@@ -1,9 +1,16 @@
 from pyspark.sql import SparkSession
 
-def load_data(database, transformed_table):
+
+def load_data(database, table_name):
     """
-    Load transformed data into a destination system.
+    Load transformed data into its final destination.
+
+    Args:
+        database (str): Databricks database.
+        table_name (str): Name of the table to load.
+
+    Returns:
+        None
     """
     spark = SparkSession.builder.getOrCreate()
-    data = spark.sql(f"SELECT * FROM {database}.{transformed_table}")
-    data.show()
+    spark.sql(f"SELECT * FROM {database}.{table_name}").show()

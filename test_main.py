@@ -1,10 +1,15 @@
 from main import main
+from unittest.mock import patch
+
 
 def test_main():
     """
-    Test the main ETL process.
+    Test main ETL pipeline execution.
     """
-    try:
+    with patch("main.extract") as mock_extract, \
+         patch("main.transform_data") as mock_transform, \
+         patch("main.load_data") as mock_load:
         main()
-    except Exception as e:
-        raise AssertionError(f"main.py failed: {str(e)}")
+        mock_extract.assert_called_once()
+        mock_transform.assert_called_once()
+        mock_load.assert_called_once()

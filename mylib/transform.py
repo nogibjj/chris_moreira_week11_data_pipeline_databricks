@@ -1,23 +1,28 @@
 from pyspark.sql import SparkSession
 
+
 def transform_data(database, raw_table, transformed_table):
     """
-    Transform raw data into transformed data.
+    Transform raw data table into a cleaned and enriched version.
 
     Args:
-        database (str): The database name.
-        raw_table (str): The name of the raw table.
-        transformed_table (str): The name of the transformed table.
+        database (str): Databricks database.
+        raw_table (str): Name of the raw data table.
+        transformed_table (str): Name of the transformed table.
+
+    Returns:
+        None
     """
     spark = SparkSession.builder.getOrCreate()
-    
-    # Drop the transformed table if it already exists
-    spark.sql(f"DROP TABLE IF EXISTS {database}.{transformed_table}")
-    
-    # Create the transformed table
-    query = (
-        f"CREATE TABLE {database}.{transformed_table} AS "
-        f"SELECT * FROM {database}.{raw_table} "
-        f"WHERE artists_name IS NOT NULL"
-    )
+
+    query = f"""
+    CREATE OR REPLACE TABLE {database}.{transformed_table} AS
+    SELECT
+        track_name AS TrackName,
+        artists_name AS Artist,
+        streams AS Streams,
+        released_year AS ReleaseYear
+    FROM {database}.{raw_table}
+    WHERE artists_name IS NOT NULL
+    """
     spark.sql(query)
