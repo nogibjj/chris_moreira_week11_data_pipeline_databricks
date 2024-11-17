@@ -11,13 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: install packages
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
         run: make install
-      - name: lint
+
+      - name: Lint code
         run: make lint
-      - name: test
+
+      - name: Test code
         run: make test
-      - name: format
+
+      - name: Format code
         run: make format
-      - name: deploy
-        run: make deploy

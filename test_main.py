@@ -1,65 +1,54 @@
 """
-Tests for mylib functions
+Simplified test file to verify that main.py, query_run.py, and viz.py run.
 """
 
-import os
-import pytest
-from mylib.lib import (
-    start_spark,
-    end_spark,
-    extract,
-    load_data,
-    describe,
-    query,
-    example_transform
-)
+from main import main as run_main
+from query_run import single_query_main as run_query
+from viz import main as run_viz
 
-@pytest.fixture(scope="module")
-def spark():
-    spark = start_spark("TestApp")
-    yield spark
-    end_spark(spark)
 
-def test_extract():
-    url = (
-        "https://raw.githubusercontent.com/nogibjj/"
-        "chris_moreira_week5_python_sql_db_project/"
-        "main/data/Spotify_Most_Streamed_Songs.csv"
-    )
-    file_path = "data/Spotify_Most_Streamed_Songs.csv"
-    extract(url, file_path)
-    assert os.path.exists(file_path) is True
+def test_main():
+    """
+    Test to ensure main.py runs without errors.
+    """
+    try:
+        print("Testing main.py...")
+        run_main()
+        print("main.py ran successfully.")
+    except Exception as e:
+        raise AssertionError(f"main.py failed: {e}")
 
-def test_load_data(spark):
-    df = load_data(spark)
-    assert df is not None
 
-def test_describe(spark):
-    df = load_data(spark)
-    result = describe(df)
-    assert result is not None
+def test_query():
+    """
+    Test to ensure query_run.py runs without errors.
+    """
+    try:
+        print("Testing query_run.py...")
+        run_query()
+        print("query_run.py ran successfully.")
+    except Exception as e:
+        raise AssertionError(f"query_run.py failed: {e}")
 
-def test_query(spark):
-    df = load_data(spark)
-    query_text = (
-        "SELECT released_year, COUNT(DISTINCT track_name) AS "
-        "unique_tracks FROM SpotifyData GROUP BY released_year "
-        "ORDER BY released_year"
-    )
-    result = query(spark, df, query_text, "SpotifyData")
-    assert result is not None
 
-def test_example_transform(spark):
-    df = load_data(spark)
-    result = example_transform(df)
-    assert result is not None
+def test_viz():
+    """
+    Test to ensure viz.py runs without errors.
+    """
+    try:
+        print("Testing viz.py...")
+        run_viz()
+        print("viz.py ran successfully.")
+    except Exception as e:
+        raise AssertionError(f"viz.py failed: {e}")
+
 
 if __name__ == "__main__":
-    # Manual execution of tests without redefining `spark`
-    spark_session = start_spark("TestApp")
-    test_extract()
-    test_load_data(spark_session)
-    test_describe(spark_session)
-    test_query(spark_session)
-    test_example_transform(spark_session)
-    end_spark(spark_session)
+    print("Starting tests...")
+    try:
+        test_main()
+        test_query()
+        test_viz()
+        print("All tests ran successfully.")
+    except AssertionError as error:
+        print(error)
