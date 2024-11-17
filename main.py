@@ -1,28 +1,17 @@
-from pyspark.sql import SparkSession
 from mylib.extract import extract
 from mylib.transform import transform_data
 from mylib.load import load_data
-
-def create_spark_session():
-    """
-    Create and configure a Spark session.
-
-    Returns:
-        SparkSession: Configured Spark session.
-    """
-    return (
-        SparkSession.builder.appName("Spotify_ETL")
-        .config("spark.sql.catalogImplementation", "in-memory")
-        .getOrCreate()
-    )
+from mylib.session import create_spark_session
 
 def main():
     """
     Orchestrate ETL process.
     """
-    spark = create_spark_session()
+    create_spark_session()  # Removed assignment to `spark`
+
     database = "csm_87_database"
-    table_name = "csm_87_Spotify_Table"
+    raw_table = "csm_87_Spotify_Table"
+    transformed_table = "csm_87_Spotify_Table_transformed"
     url = (
         "https://raw.githubusercontent.com/nogibjj/"
         "chris_moreira_week6_sql_databricks/main/data/"
@@ -30,13 +19,13 @@ def main():
     )
 
     print("Extracting data...")
-    extract(url, table_name, database)
+    extract(url, raw_table, database)
 
     print("Transforming data...")
-    transform_data(database, table_name)
+    transform_data(database, raw_table, transformed_table)
 
     print("Loading data...")
-    load_data(database, table_name)
+    load_data(database, transformed_table)
 
 if __name__ == "__main__":
     main()
