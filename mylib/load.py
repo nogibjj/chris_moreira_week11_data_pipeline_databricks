@@ -1,6 +1,11 @@
+"""
+Load transformed data into a Delta table.
+"""
+
+
 def load_data(df, table_name, database="my_database"):
     """
-    Loads the transformed Spark DataFrame into the Delta table, enabling schema merging.
+    Loads the transformed Spark DataFrame into a Delta table.
 
     Args:
         df (DataFrame): The transformed Spark DataFrame.
@@ -10,9 +15,7 @@ def load_data(df, table_name, database="my_database"):
     Returns:
         None
     """
-    df.write.format("delta") \
-        .mode("overwrite") \
-        .option("mergeSchema", "true") \
-        .saveAsTable(f"{database}.{table_name}")
-    
-    print(f"Transformed data successfully loaded into table: {database}.{table_name}")
+    df.write.format("delta").mode("overwrite").saveAsTable(
+        f"{database}.{table_name}"
+    )
+    print(f"Transformed data loaded into table: {database}.{table_name}")
