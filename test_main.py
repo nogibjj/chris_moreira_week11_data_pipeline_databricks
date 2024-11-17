@@ -4,7 +4,7 @@ from viz import main as run_viz
 
 def test_main():
     """
-    Test the main.py execution.
+    Test main.py execution.
     """
     try:
         run_main()

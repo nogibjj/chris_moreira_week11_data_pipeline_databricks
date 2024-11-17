@@ -1,3 +1,11 @@
+from pyspark.sql import SparkSession
+
+def create_spark_session():
+    """
+    Create and return a Spark session.
+    """
+    return SparkSession.builder.getOrCreate()
+
 def single_query_main():
     """
     Execute SQL query on the Delta table.
@@ -6,13 +14,10 @@ def single_query_main():
     database = "csm_87_database"
     table_name = "csm_87_Spotify_Table_transformed"
 
-    # Check if table exists
     if not spark.catalog.tableExists(f"{database}.{table_name}"):
-        print(f"Table {table_name} not found in {database}.")
-        print("Ensure the extract step ran successfully.")
-        return
+        raise ValueError(f"Table {table_name} not found in {database}.")
 
-    # Execute SQL query
     query = f"SELECT * FROM {database}.{table_name} LIMIT 10"
     result = spark.sql(query)
     result.show()
+    print(f"Query executed on {table_name}")

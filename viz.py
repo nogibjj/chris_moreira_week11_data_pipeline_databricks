@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
-import pandas as pd
 from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
 
 def create_spark_session():
     """
@@ -10,19 +9,15 @@ def create_spark_session():
 
 def main():
     """
-    Query and visualize data from the Delta table.
+    Query and visualize data.
     """
     spark = create_spark_session()
     database = "csm_87_database"
     table_name = "csm_87_Spotify_Table_transformed"
 
-    # Check if table exists
     if not spark.catalog.tableExists(f"{database}.{table_name}"):
-        print(f"Table {table_name} not found in {database}.")
-        print("Run the extract step to create the table.")
-        return
+        raise ValueError(f"Table {table_name} not found in {database}.")
 
-    # Query the data
     query = f"""
     SELECT Artist, SUM(Stream_Count) AS Total_Streams
     FROM {database}.{table_name}
@@ -30,24 +25,13 @@ def main():
     ORDER BY Total_Streams DESC
     LIMIT 10
     """
-    result = spark.sql(query).toPandas()
+    data = spark.sql(query).toPandas()
 
-    # Handle empty results
-    if result.empty:
-        print("No data available for visualization.")
-        return
-
-    # Plot the data
-    plt.figure(figsize=(10, 6))
-    plt.bar(result['Artist'], result['Total_Streams'], color='blue')
+    plt.bar(data["Artist"], data["Total_Streams"])
     plt.xlabel("Artist")
     plt.ylabel("Total Streams")
-    plt.title("Top 10 Artists by Stream Count")
+    plt.title("Top 10 Artists by Total Streams")
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
-
-    # Save and display the plot
-    plot_path = "top_artists_streams.png"
-    plt.savefig(plot_path)
-    plt.show()
-    print(f"Visualization saved to {plot_path}.")
+    plt.savefig("top_artists.png")
+    print("Visualization saved as 'top_artists.png'")
