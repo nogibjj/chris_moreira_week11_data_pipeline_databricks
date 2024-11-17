@@ -1,34 +1,41 @@
-from pyspark.sql import SparkSession
+"""
+Extract data from a URL, clean it, and save as a Delta table.
+"""
+
 import pandas as pd
+from pyspark.sql import SparkSession
 
 def extract(url, table_name, database="csm_87_database"):
-    spark = SparkSession.builder \
-        .appName("Spotify_ETL") \
-        .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .getOrCreate()
+    """
+    Extract data from URL, clean, and save to Delta table.
 
-    try:
-        # Load data into Pandas DataFrame
-        df = pd.read_csv(url)
-        print("Data loaded successfully.")
+    Args:
+        url (str): The URL for the CSV file to download.
+        table_name (str): The name of the Delta table to create.
+        database (str): The Databricks Catalog database.
 
-        # Clean column names
-        df.columns = [col.strip().replace(" ", "_") for col in df.columns]
-        print("Column names cleaned.")
+    Returns:
+        None
+    """
+    spark = SparkSession.builder.getOrCreate()
 
-        # Convert Pandas DataFrame to Spark DataFrame
-        spark_df = spark.createDataFrame(df)
+    # Load CSV data into Pandas DataFrame
+    df = pd.read_csv(url)
 
-        # Create database if not exists
-        spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
+    # Clean column names by removing spaces and special characters
+    df.columns = [
+        col.strip().replace(" ", "_").replace("(", "").replace(")", "")
+        for col in df.columns
+    ]
 
-        # Write Spark DataFrame to Delta table
-        spark_df.write.format("delta").mode("overwrite").saveAsTable(
-            f"{database}.{table_name}"
-        )
-        print(f"Data successfully written to {database}.{table_name}")
+    # Convert Pandas DataFrame to Spark DataFrame
+    spark_df = spark.createDataFrame(df)
 
-    except Exception as e:
-        print(f"Error in extract process: {e}")
+    # Create database if it doesn't exist
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
+
+    # Save the DataFrame as a Delta table in Databricks
+    spark_df.write.format("delta").mode("overwrite").saveAsTable(
+        f"{database}.{table_name}"
+    )
+    print(f"Data loaded to Delta table: {database}.{table_name}")
