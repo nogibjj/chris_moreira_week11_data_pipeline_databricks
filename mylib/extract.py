@@ -7,12 +7,12 @@ from pyspark.sql import SparkSession
 
 def extract(url, table_name, database="csm_87_database"):
     """
-    Extracts data from a URL, cleans column names, and writes to Delta.
+    Extract data from URL, clean, and save to Delta.
 
     Args:
-        url (str): The URL of the CSV file to download.
-        table_name (str): The name of the Delta table to create.
-        database (str): The Databricks Catalog database.
+        url (str): CSV file URL.
+        table_name (str): Name of Delta table to create.
+        database (str): Databricks database.
 
     Returns:
         None
@@ -28,11 +28,13 @@ def extract(url, table_name, database="csm_87_database"):
         for col in df.columns
     ]
 
-    # Convert the Pandas DataFrame to Spark DataFrame
+    # Convert Pandas DataFrame to Spark DataFrame
     spark_df = spark.createDataFrame(df)
 
-    # Write Spark DataFrame to Delta format
+    # Create database if not exists
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
+
+    # Write Spark DataFrame to Delta table
     spark_df.write.format("delta").mode("overwrite").saveAsTable(
         f"{database}.{table_name}"
     )
