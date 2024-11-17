@@ -1,13 +1,19 @@
+from pyspark.sql import SparkSession
 from mylib.extract import extract
 from mylib.transform import transform_data
 from mylib.load import load_data
-from mylib.session import create_spark_session
+
+def create_spark_session():
+    """
+    Create and return a Spark session.
+    """
+    return SparkSession.builder.appName("ETL Pipeline").getOrCreate()
 
 def main():
     """
     Orchestrate ETL process.
     """
-    create_spark_session()  # Removed assignment to `spark`
+    spark = create_spark_session()
 
     database = "csm_87_database"
     raw_table = "csm_87_Spotify_Table"

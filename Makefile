@@ -14,3 +14,7 @@ lint:
 refactor: format lint
 
 all: install lint test format
+
+
+lint:
+	ruff check *.py mylib/*.py

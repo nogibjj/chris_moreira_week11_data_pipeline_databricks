@@ -1,21 +1,23 @@
 from pyspark.sql import SparkSession
 
-def transform_data(database, table_name):
+def transform_data(database, raw_table, transformed_table):
     """
-    Transform data in Delta table.
+    Transform raw data into transformed data.
 
     Args:
-        database (str): Databricks database.
-        table_name (str): Name of the Delta table.
-
-    Returns:
-        None
+        database (str): The database name.
+        raw_table (str): The name of the raw table.
+        transformed_table (str): The name of the transformed table.
     """
     spark = SparkSession.builder.getOrCreate()
-
-    # Transform data by adding a "transformed" column
-    query = f"""
-        CREATE OR REPLACE TABLE {database}.{table_name}_transformed
-        AS SELECT *, 1 AS transformed FROM {database}.{table_name}
-    """
+    
+    # Drop the transformed table if it already exists
+    spark.sql(f"DROP TABLE IF EXISTS {database}.{transformed_table}")
+    
+    # Create the transformed table
+    query = (
+        f"CREATE TABLE {database}.{transformed_table} AS "
+        f"SELECT * FROM {database}.{raw_table} "
+        f"WHERE artists_name IS NOT NULL"
+    )
     spark.sql(query)
