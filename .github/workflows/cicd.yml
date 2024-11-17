@@ -14,6 +14,9 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install Java for PySpark
+        run: sudo apt-get install -y openjdk-11-jdk
+
       - name: Install dependencies
         run: make install
 
