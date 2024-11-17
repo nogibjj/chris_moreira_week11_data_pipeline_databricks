@@ -26,6 +26,10 @@ This project is designed to demonstrate the end-to-end process of building a dat
 
 
 ## Results Snapshot ##
+
+# Query Transforming Data Table
+![image](https://github.com/user-attachments/assets/408fd2f4-8c82-4849-bee5-7e1d0d442ead)
+
 # Databricks Workflow
 ![image](https://github.com/user-attachments/assets/161b503f-8cd2-413f-8178-4016c777c7cc)
 
