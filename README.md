@@ -1,58 +1,36 @@
 [![CI Pipeline](https://github.com/nogibjj/chris_moreira_week11_data_pipeline_databricks/actions/workflows/cicd.yml/badge.svg)](https://github.com/nogibjj/chris_moreira_week11_data_pipeline_databricks/actions/workflows/cicd.yml)
 
 # Project Goal
-In this project, we set up a PySpark environment to process and analyze a large dataset containing information on Spotify's most-streamed songs. The primary goal is to leverage PySpark’s data processing capabilities to perform efficient transformations and analyses on the dataset, which includes fields such as track name, artist, release date, streams, and several musical attributes. The project includes loading the dataset, executing a Spark SQL query to extract insights (e.g., counting unique tracks by release year), and performing a data transformation that categorizes songs by popularity based on stream counts. Through these steps, we aim to demonstrate PySpark’s ability to handle large datasets, run SQL queries, and apply transformations that yield meaningful insights, all while storing processed outputs as CSV files for further use.
+This project is designed to demonstrate the end-to-end process of building a data pipeline in Databricks. The pipeline extracts data from a CSV source, transforms it to include meaningful insights like popularity categories, and loads the transformed data into a Delta table. The processed data is then queried and visualized to generate actionable insights. This project emphasizes the application of modern ETL workflows, data visualization techniques, and automation using GitHub CI/CD integration.
+
 
 # Pyspark Functions running in the following order:
-- start_spark: Initiates PySpark
-- end_spark: Terminates PySpark
-- extract: Retrieves dataset form Github and adds raw data into the data folder in this rpeository. 
-- load_data: structures a data schema in PySpark
-- query: runs a SQL query operation in the raw data(see below for operation details)
-- describe: produces a data summary each attribute of the raw dataset.
-- example_transform: generates column for Music Popularity to the data set based on stream count (see below for details)
+- extract.py: extract(url, table_name, database): Extracts the data from a given CSV URL, cleans it by renaming columns, and loads the data into a Delta table within the specified Databricks database.
+- transform.py: transform_data(spark, database, raw_table, transformed_table): Reads the raw data from a Delta table, adds a new column (popularity_category) based on the song popularity score, and saves the transformed data into a new Delta table.
+- load.py load_data(database, table_name): Ensures the transformed data is properly loaded into the specified Delta table in the database.
+- query_run.py: single_query_main(): Runs a sample SQL query on the transformed Delta table, fetching a limited number of rows for previewing data insights.
+- viz.py: run_viz(): Queries the transformed Delta table and generates a bar chart visualization for analyzing popularity categories using Matplotlib.
+- main.py: main(): Orchestrates the ETL process by calling the extract, transform_data, and load_data functions sequentially. This is the central script for running the pipeline.
+- test_main.py: Contains basic test cases to ensure the individual components of the pipeline work as expected. It checks for issues in the ETL flow and query execution.
 
 # Repository Schema
 ![image](https://github.com/user-attachments/assets/58ff8c6a-3b7d-44c0-ae3c-680e1bc36a81) 
 
-# Summary of Pyspark Operations
-Data Transformation with Pyspark
-```PySpark
-    df = df.withColumn(
-        "Popularity_Category",
-        F.when(F.col("streams") > 1000000000, "Ultra Popular")
-         .when((F.col("streams") > 500000000) &
-               (F.col("streams") <= 1000000000),
-               "Very Popular")
-         .when((F.col("streams") > 100000000) &
-               (F.col("streams") <= 500000000),
-               "Popular")
-         .otherwise("Less Popular")
-    )
-```
 
-Query Operation ran on Data
-```sql
-SELECT released_year, COUNT(DISTINCT track_name) AS 
-unique_tracks FROM SpotifyData GROUP BY released_year 
-ORDER BY released_year
-```
+# Databricks Workflow
+![image](https://github.com/user-attachments/assets/161b503f-8cd2-413f-8178-4016c777c7cc)
+
 
 # Project Structure
-![image](https://github.com/user-attachments/assets/65f0f13e-7555-4fb3-b20b-b17f8ef84e67)
+![image](https://github.com/user-attachments/assets/06ed4ad7-2651-410a-b2e3-6d19a3e3b79c)
 
-# Results Snapshot
-# Describe Result
-![image](https://github.com/user-attachments/assets/e45dad13-3410-4fc6-b32b-1b32e94dccf1)
 
-# Load Data Result
-![image](https://github.com/user-attachments/assets/bdb6ed6e-17bd-4582-9820-84ab14ab80d2)
+## Results Snapshot ##
+# Databricks Workflow
+![image](https://github.com/user-attachments/assets/161b503f-8cd2-413f-8178-4016c777c7cc)
 
-# Loaded Data Preview
-![image](https://github.com/user-attachments/assets/bee05666-c3a1-46af-acec-73f34adc2972)
+# Database & Data Table Creation
+![image](https://github.com/user-attachments/assets/28a03cff-f9cb-41a5-95e6-e5a3488b81d5)
 
-# Query Result
-![image](https://github.com/user-attachments/assets/02c22086-5d42-47bc-8484-fe29697e9fad)
-
-# Transform Operation Output
-![image](https://github.com/user-attachments/assets/7259513f-5577-454e-9f41-cf62eea04969)
+# Data Visual
+![image](https://github.com/user-attachments/assets/cdf6c2ee-7bfb-4104-b74f-1605cdb3bef1)
